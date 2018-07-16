@@ -33,8 +33,12 @@ class StatisticSuite extends FunSuite{
   test("Summary Statistics: List"){
     val metric = Metric("list", Array[Double](1.0, 1.0, 1.0, 10.0, 10.0, 10.0), "test")
     val result = DescriptiveStatistics.summary(metric)
-    val truth = MetricStatistics(1, 10, 5.5, 4.5, 6)
-    assert(result === truth)
+
+    assert(result.min === 1.0)
+    assert(result.max === 10.0)
+    assert(result.mean === 5.5)
+    assert(result.std === (4.9295 +- 1e-4))
+    assert(result.count === 6.0)
   }
 
   test("Summary Statistics: No Data"){
@@ -133,6 +137,29 @@ class StatisticSuite extends FunSuite{
 
     val result = EffectSizes.meanRatio(controlMetric, experimentMetric)
     assert(result === 0.1)
+  }
+
+  test("Effect Size: Mean Ratio (Zero Mean)"){
+    val experimentData = Array(10.0, 10.0, 10.0, 10.0, 10.0)
+    val controlData = Array(0.0, 0.0, 0.0, 0.0, 0.0)
+
+    val experimentMetric = Metric("high-metric", experimentData, "canary")
+    val controlMetric = Metric("high-metric", controlData, "baseline")
+
+    assertThrows[IllegalArgumentException]{
+      EffectSizes.meanRatio(controlMetric, experimentMetric)
+    }
+  }
+
+  test("Effect Size: Cohen's D"){
+    val experimentData = Array(5.0, 5.0, 5.0, 10.0, 10.0, 10.0)
+    val controlData = Array(1.0, 1.0, 1.0, 2.0, 2.0, 2.0)
+
+    val experimentMetric = Metric("high-metric", experimentData, "canary")
+    val controlMetric = Metric("high-metric", controlData, "baseline")
+
+    val result = EffectSizes.cohenD(experimentMetric, controlMetric)
+    assert(result === (3.03821 +- 1e-5))
   }
 
 }
