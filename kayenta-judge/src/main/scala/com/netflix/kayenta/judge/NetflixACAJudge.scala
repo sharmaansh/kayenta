@@ -142,6 +142,9 @@ class NetflixACAJudge extends CanaryJudge with StrictLogging {
 
     val critical = MapUtils.getAsBooleanWithDefault(false, metricConfig.getAnalysisConfigurations, "canary", "critical")
 
+    val allowedIncrease = MapUtils.getAsDoubleWithDefault(0.0, metricConfig.getAnalysisConfigurations, "canary", "effectSize", "allowedIncrease")
+    val allowedDecrease = MapUtils.getAsDoubleWithDefault(0.0, metricConfig.getAnalysisConfigurations, "canary", "effectSize", "allowedDecrease")
+
     //=============================================
     // Metric Transformation (Remove NaN values, etc.)
     // ============================================
